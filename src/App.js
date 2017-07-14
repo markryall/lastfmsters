@@ -1,19 +1,47 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
-  render() {
+    constructor() {
+        super();
+        this.state = {
+            command: ''
+        };
+        this.onChange = (event) => {
+            this.setState({command: event.target.value});
+        }
+        this.handleKeyPress = (event) => {
+            if(event.key === 'Enter'){
+                console.log('enter press here! ')
+            }
+        }
+    }
+
+    componentDidMount(){
+        this.nameInput.focus();
+    }
+
+    render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+        <div className="App">
+            <div className="App-header">
+                <h2>Lastfmsters</h2>
+            </div>
+            <p className="App-intro">
+                To get started, try the 'help' command
+            </p>
+            <span id="PS1">&gt; </span>
+            <input
+                id="input"
+                ref={(input) => { this.nameInput = input; }} 
+                onKeyPress={this.handleKeyPress}
+                onChange={this.onChange}
+                value={ this.state.command }
+                type="text"
+                className="cmdline"
+                autoComplete="off"
+            />
         </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
     );
   }
 }
