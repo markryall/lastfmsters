@@ -5,6 +5,7 @@ class App extends Component {
     constructor() {
         super();
         this.state = {
+            history: [],
             command: ''
         };
         this.onChange = (event) => {
@@ -12,7 +13,15 @@ class App extends Component {
         }
         this.handleKeyPress = (event) => {
             if(event.key === 'Enter'){
-                console.log('enter press here! ')
+                const history = this.state.history.slice(0);
+                history.push({
+                    command: `> ${this.state.command}`,
+                    response: this.state.command
+                });
+                this.setState({
+                    history: history,
+                    command: ''
+                });
             }
         }
     }
@@ -22,6 +31,14 @@ class App extends Component {
     }
 
     render() {
+        const history = this.state.history.map((entry, index) => {
+            return (
+                <div>
+                    <div>{ entry.command }</div>
+                    <div>{ entry.response }</div>
+                </div>
+            );
+        });
     return (
         <div className="App">
             <div className="App-header">
@@ -30,6 +47,7 @@ class App extends Component {
             <p className="App-intro">
                 To get started, try the 'help' command
             </p>
+            <div>{ history }</div>
             <span id="PS1">&gt; </span>
             <input
                 id="input"
