@@ -1,41 +1,44 @@
 import React, { Component } from 'react';
 import './App.css';
 
+const max = 40;
+
+const newHistory = ( previousHistory, command ) => {
+    if ( command === 'clear' ) return [];
+    const history = previousHistory.slice(0);
+    history.push( `> ${command}` );
+    commandResponse( command ).forEach( ( line ) => { history.push( line ); } );
+    return history.length > max ? history.slice( history.length - max ) : history;
+}
+
+const commandResponse = ( command ) => {
+    switch( command ) {
+        case "help":
+            return ["help", "ls"];
+        case "ls":
+            return [ "README.md    node_modules package.json public       src" ];
+        default:
+            return [ `Unknown command "${command}"` ];
+    }
+}
+
 class App extends Component {
-    constructor() {
-        super();
-        this.state = {
-            history: [],
-            command: ''
-        };
-        this.onChange = (event) => {
-            this.setState({command: event.target.value});
-        }
-        const commandResponse = ( command ) => {
-            switch( command ) {
-                case "help":
-                    return ["help", "ls"];
-                case "ls":
-                    return [ "README.md    node_modules package.json public       src" ];
-                default:
-                    return [ `Unknown command "${command}"` ];
-            }
-        }
-        const newHistory = ( previousHistory, command ) => {
-            if ( command === 'clear' ) return [];
-            const history = previousHistory.slice(0);
-            history.push( `> ${command}` );
-            commandResponse( command ).forEach( ( line ) => { history.push( line ); } );
-            return history;
-        }
-        this.handleKeyPress = ( event ) => {
-            if ( event.key === 'Enter' ){
-                const { history, command } = this.state;
-                this.setState( {
-                    history: newHistory( history, command ),
-                    command: ''
-                } );
-            }
+    state = {
+        history: [],
+        command: ''
+    }
+
+    onChange = (event) => {
+        this.setState({command: event.target.value});
+    }
+
+    handleKeyPress = ( event ) => {
+        if ( event.key === 'Enter' ){
+            const { history, command } = this.state;
+            this.setState( {
+                history: newHistory( history, command ),
+                command: ''
+            } );
         }
     }
 
@@ -68,10 +71,10 @@ class App extends Component {
     return (
         <div className="App">
             <div className="App-header">
-                <h2>Lastfmsters</h2>
+                <h2>here you are</h2>
             </div>
             <p className="App-intro">
-                To get started, try the 'help' command
+                to get started, try the 'help' command
             </p>
             <div>{ history }</div>
             <span id="PS1">&gt; </span>
