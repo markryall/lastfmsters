@@ -6,7 +6,9 @@ class App extends Component {
     state = {
         executingCommand: false,
         content: [],
-        command: ''
+        command: '',
+        history: [],
+        offset: 0,
     }
 
     reset = () => {
@@ -39,9 +41,23 @@ class App extends Component {
         this.setState( { command: event.target.value } );
     }
 
+    switchCommand = ( offset ) => {
+        const { history } = this.state;
+        const command = history[ history.length - offset ];
+        const state = {}
+        if ( command ) state[ 'command' ] = command;
+        if ( offset > 0 && offset <= history.length ) state[ 'offset' ] = offset;
+        this.setState( state );
+    }
+
     handleKeyDown = ( event ) => {
+        const { offset } = this.state;
         if ( event.key === 'ArrowUp' ) {
-            this.setState( { command: 'ls' } );
+            this.switchCommand( offset + 1 );
+            event.preventDefault();
+        }
+        if ( event.key === 'ArrowDown' ) {
+            this.switchCommand( offset - 1 );
             event.preventDefault();
         }
         if ( event.key === 'l' && event.ctrlKey ) {
@@ -51,8 +67,10 @@ class App extends Component {
 
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
-            const { command } = this.state;
-            this.setState( { command: '', executingCommand: true } );
+            const { command, history } = this.state;
+            const newHistory = history.slice(0);
+            newHistory.push( command );
+            this.setState( { command: '', executingCommand: true, history: newHistory, offset: 0 } );
             this.handleCommand( command );
         }
     }
