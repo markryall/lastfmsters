@@ -12,8 +12,7 @@ const invokeCommand = ( command, handler ) => {
             break;
         case "countdown":
             let time = parseInt( commands[1] );
-            let tick = null;
-            tick = () => {
+            const tick = () => {
                 if ( time <= 0 ) {
                     handler.completeCommand( [] );
                 } else {
