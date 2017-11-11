@@ -2,15 +2,30 @@ import React, { Component } from 'react';
 import './App.css';
 
 const invokeCommand = ( command, handler ) => {
-    switch( command ) {
+    const commands = command.split( " " );
+    switch( commands[0] ) {
         case "help":
-            setTimeout( () => { handler( [ "help", "ls" ] ); }, 0);
+            setTimeout( () => { handler.completeCommand( [ "help", "ls" ] ); }, 0);
             break;
         case "ls":
-            setTimeout( () => { handler( [ "README.md    node_modules package.json public       src" ] ) }, 1000);
+            setTimeout( () => { handler.completeCommand( [ "README.md    node_modules package.json public       src" ] ) }, 1000);
+            break;
+        case "countdown":
+            let time = parseInt( commands[1] );
+            let tick = null;
+            tick = () => {
+                if ( time <= 0 ) {
+                    handler.completeCommand( [] );
+                } else {
+                    handler.appendContent( [ time ] );
+                }
+                time = time - 1;
+                if ( time >= 0 ) setTimeout( tick, 1000 );
+            };
+            setTimeout( tick, 0 );
             break;
         default:
-            setTimeout( () => { handler( [ `Unknown command "${command}"` ] ); }, 0 );
+            setTimeout( () => { handler.completeCommand( [ `Unknown command "${command}"` ] ); }, 0 );
     }
 }
 
@@ -35,7 +50,7 @@ class App extends Component {
         this.setState( { content } );
     }
 
-    handleCommandResponse = ( newContent ) => {
+    completeCommand = ( newContent ) => {
         this.appendContent( newContent );
         this.setState( { executingCommand: false } );
         this.nameInput.focus();
@@ -46,7 +61,7 @@ class App extends Component {
             this.reset();
         } else {
             this.appendContent( [ `> ${command}` ] );
-            invokeCommand( command, this.handleCommandResponse );
+            invokeCommand( command, this );
         }
     }
 
