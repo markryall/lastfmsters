@@ -7,7 +7,6 @@ class App extends Component {
         executingCommand: false,
         content: [],
         command: '',
-        history: [],
         offset: 0,
     }
 
@@ -46,7 +45,7 @@ class App extends Component {
             this.setState( { command: '', offset: 0 } );
             return;
         }
-        const { history } = this.state;
+        const history = this.getHistory();
         const command = history[ history.length - offset ];
         const state = {}
         if ( command ) state[ 'command' ] = command;
@@ -69,12 +68,21 @@ class App extends Component {
         }
     }
 
+    getHistory() {
+        return JSON.parse( global.localStorage.getItem( 'history' ) || "[]" );
+    }
+
+    appendToHistory( command ) {
+        const history = this.getHistory();
+        history.push( command );
+        global.localStorage.setItem( 'history', JSON.stringify( history ) );
+    }
+
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
-            const { command, history } = this.state;
-            const newHistory = history.slice(0);
-            newHistory.push( command );
-            this.setState( { command: '', executingCommand: true, history: newHistory, offset: 0 } );
+            const { command } = this.state;
+            this.appendToHistory( command );
+            this.setState( { command: '', executingCommand: true, offset: 0 } );
             this.handleCommand( command );
         }
     }
