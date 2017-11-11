@@ -3,14 +3,6 @@ import './App.css';
 
 const max = 40;
 
-const newHistory = ( previousHistory, command ) => {
-    if ( command === 'clear' ) return [];
-    const history = previousHistory.slice(0);
-    history.push( `> ${command}` );
-    commandResponse( command ).forEach( ( line ) => { history.push( line ); } );
-    return history.length > max ? history.slice( history.length - max ) : history;
-}
-
 const commandResponse = ( command ) => {
     switch( command ) {
         case "help":
@@ -22,21 +14,29 @@ const commandResponse = ( command ) => {
     }
 }
 
+const newContent = ( previousContent, command ) => {
+    if ( command === 'clear' ) return [];
+    const content = previousContent.slice(0);
+    content.push( `> ${command}` );
+    commandResponse( command ).forEach( ( line ) => { content.push( line ); } );
+    return content.length > max ? content.slice( content.length - max ) : content;
+}
+
 class App extends Component {
     state = {
-        history: [],
+        content: [],
         command: ''
     }
 
-    onChange = (event) => {
-        this.setState({command: event.target.value});
+    onChange = ( event ) => {
+        this.setState( { command: event.target.value } );
     }
 
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
-            const { history, command } = this.state;
+            const { content, command } = this.state;
             this.setState( {
-                history: newHistory( history, command ),
+                content: newContent( content, command ),
                 command: ''
             } );
         }
@@ -63,35 +63,31 @@ class App extends Component {
     }
 
     render() {
-        const history = this.state.history.map( ( entry ) => {
-            return (
-                <div>{ entry }</div>
-            );
-        });
-    return (
-        <div className="App">
-            <div className="App-header">
-                <h2>here you are</h2>
+        const { content } = this.state;
+        return (
+            <div className="App">
+                <div className="App-header">
+                    <h2>here you are</h2>
+                </div>
+                <p className="App-intro">
+                    to get started, try the 'help' command
+                </p>
+                <div>{ content.map( ( line ) => <div>{ line }</div> ) }</div>
+                <span id="PS1">&gt; </span>
+                <input
+                    id="input"
+                    ref={(input) => { this.nameInput = input; }} 
+                    onKeyUp={this.handleKeyUp}
+                    onKeyPress={this.handleKeyPress}
+                    onChange={this.onChange}
+                    value={ this.state.command }
+                    type="text"
+                    className="cmdline"
+                    autoComplete="off"
+                />
             </div>
-            <p className="App-intro">
-                to get started, try the 'help' command
-            </p>
-            <div>{ history }</div>
-            <span id="PS1">&gt; </span>
-            <input
-                id="input"
-                ref={(input) => { this.nameInput = input; }} 
-                onKeyUp={this.handleKeyUp}
-                onKeyPress={this.handleKeyPress}
-                onChange={this.onChange}
-                value={ this.state.command }
-                type="text"
-                className="cmdline"
-                autoComplete="off"
-            />
-        </div>
-    );
-  }
+        );
+    }
 }
 
 export default App;
