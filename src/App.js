@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const commandResponse = ( command ) => {
+const invokeCommand = ( command, handler ) => {
     switch( command ) {
         case "help":
-            return ["help", "ls"];
+            setTimeout( () => { handler( [ "help", "ls" ] ); }, 0);
+            break;
         case "ls":
-            return [ "README.md    node_modules package.json public       src" ];
+            setTimeout( () => { handler( [ "README.md    node_modules package.json public       src" ] ) }, 1000);
+            break;
         default:
-            return [ `Unknown command "${command}"` ];
+            setTimeout( () => { handler( [ `Unknown command "${command}"` ] ); }, 0 );
     }
 }
-
 
 class App extends Component {
     state = {
@@ -45,7 +46,7 @@ class App extends Component {
             this.reset();
         } else {
             this.appendContent( [ `> ${command}` ] );
-            setTimeout( () => { this.handleCommandResponse( commandResponse( command ) ) }, 1000 );
+            invokeCommand( command, this.handleCommandResponse );
         }
     }
 
@@ -62,7 +63,7 @@ class App extends Component {
 
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
-            const { content, command } = this.state;
+            const { command } = this.state;
             this.setState( { command: '', executingCommand: true } );
             this.handleCommand( command );
         }
