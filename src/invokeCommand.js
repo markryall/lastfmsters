@@ -1,7 +1,7 @@
 const commandHandlers = {};
 
 commandHandlers[ 'countdown' ] = ( handler, { args } ) => {
-    let time = parseInt( args.shift() || 0 );
+    let time = parseInt( args.shift() || 0, 10 );
     const tick = () => {
         if ( time <= 0 ) {
             handler.completeCommand( [] );
