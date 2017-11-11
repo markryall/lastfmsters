@@ -1,5 +1,9 @@
 const commandHandlers = {};
 
+commandHandlers[ 'clear' ] = ( handler ) => {
+    handler.reset();
+};
+
 commandHandlers[ 'countdown' ] = ( handler, { args } ) => {
     let time = parseInt( args.shift() || 0, 10 );
     const tick = () => {

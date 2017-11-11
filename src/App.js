@@ -11,6 +11,7 @@ class App extends Component {
 
     reset = () => {
         this.setState( { content: [], executingCommand: false } );
+        this.nameInput.focus();
     }
 
     appendContent = ( newContent ) => {
@@ -30,12 +31,8 @@ class App extends Component {
     }
 
     handleCommand = ( command ) => {
-        if ( command === 'clear' ) {
-            this.reset();
-        } else {
-            this.appendContent( [ `> ${command}` ] );
-            invokeCommand( command, this );
-        }
+        this.appendContent( [ `> ${command}` ] );
+        invokeCommand( command, this );
     }
 
     onChange = ( event ) => {
