@@ -15,7 +15,10 @@ commandHandlers[ 'countdown' ] = ( handler, { args } ) => {
 };
 
 commandHandlers[ 'help' ] = ( handler ) => {
-    handler.completeCommand( [ "help", "ls" ] );
+    handler.completeCommand( [
+        "countdown <seconds>: counts down seconds",
+        "ls: list files",
+    ] );
 };
 
 commandHandlers[ 'ls' ] = ( handler ) => {
