@@ -12,23 +12,16 @@ const commandResponse = ( command ) => {
     }
 }
 
-const handleCommand = ( command, component ) => {
-    if ( command === 'clear' ) {
-        component.reset();
-    } else {
-        component.appendContent( [ `> ${command}` ] );
-        setTimeout( () => { component.appendContent( commandResponse( command ) ) }, 1000 );
-    }
-}
 
 class App extends Component {
     state = {
+        executingCommand: false,
         content: [],
         command: ''
     }
 
     reset = () => {
-        this.setState( { content: [] } );
+        this.setState( { content: [], executingCommand: false } );
     }
 
     appendContent = ( newContent ) => {
@@ -41,15 +34,37 @@ class App extends Component {
         this.setState( { content } );
     }
 
+    handleCommandResponse = ( newContent ) => {
+        this.appendContent( newContent );
+        this.setState( { executingCommand: false } );
+        this.nameInput.focus();
+    }
+
+    handleCommand = ( command ) => {
+        if ( command === 'clear' ) {
+            this.reset();
+        } else {
+            this.appendContent( [ `> ${command}` ] );
+            setTimeout( () => { this.handleCommandResponse( commandResponse( command ) ) }, 1000 );
+        }
+    }
+
     onChange = ( event ) => {
         this.setState( { command: event.target.value } );
+    }
+
+    handleKeyDown = ( event ) => {
+        if ( event.key === 'ArrowUp' ) {
+            this.setState( { command: 'ls' } );
+            event.preventDefault();
+        }
     }
 
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
             const { content, command } = this.state;
-            this.setState( { command: '' } );
-            handleCommand( command, this );
+            this.setState( { command: '', executingCommand: true } );
+            this.handleCommand( command );
         }
     }
 
@@ -75,7 +90,23 @@ class App extends Component {
     }
 
     render() {
-        const { command, content } = this.state;
+        const { command, content, executingCommand } = this.state;
+        const prompt = (
+            <div>
+                <span id="PS1">&gt; </span>
+                <input
+                    id="input"
+                    ref={ (input) => { this.nameInput = input; } } 
+                    onKeyDown={ this.handleKeyDown }
+                    onKeyPress={ this.handleKeyPress }
+                    onChange={ this.onChange }
+                    value={ command }
+                    type="text"
+                    className="cmdline"
+                    autoComplete="off"
+                />
+            </div>
+        );
         return (
             <div className="App">
                 <div className="App-header">
@@ -85,18 +116,7 @@ class App extends Component {
                     to get started, try the 'help' command
                 </p>
                 <div>{ content.map( ( line, index ) => <div key={ index }>{ line }</div> ) }</div>
-                <span id="PS1">&gt; </span>
-                <input
-                    id="input"
-                    ref={ (input) => { this.nameInput = input; } } 
-                    onKeyUp={ this.handleKeyUp }
-                    onKeyPress={ this.handleKeyPress }
-                    onChange={ this.onChange }
-                    value={ command }
-                    type="text"
-                    className="cmdline"
-                    autoComplete="off"
-                />
+                { ! executingCommand && prompt }
             </div>
         );
     }
