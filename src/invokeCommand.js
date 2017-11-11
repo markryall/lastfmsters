@@ -1,5 +1,7 @@
-const countdownHandler = ( handler, args ) => {
-    let time = parseInt( args.shift() );
+const commandHandlers = {};
+
+commandHandlers[ 'countdown' ] = ( handler, args ) => {
+    let time = parseInt( args.shift() || 0 );
     const tick = () => {
         if ( time <= 0 ) {
             handler.completeCommand( [] );
@@ -12,18 +14,12 @@ const countdownHandler = ( handler, args ) => {
     setTimeout( tick, 0 );
 };
 
-const helpHandler = ( handler ) => {
+commandHandlers[ 'help' ] = ( handler ) => {
     handler.completeCommand( [ "help", "ls" ] );
 };
 
-const lsHandler = ( handler ) => {
+commandHandlers[ 'ls' ] = ( handler ) => {
     handler.completeCommand( "README.md node_modules package.json public src".split(" ") );
-};
-
-const commandHandlers = {
-    countdown: countdownHandler,
-    help: helpHandler,
-    ls: lsHandler,
 };
 
 export default ( line, handler ) => {
