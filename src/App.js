@@ -42,6 +42,10 @@ class App extends Component {
     }
 
     switchCommand = ( offset ) => {
+        if ( offset === 0 ) {
+            this.setState( { command: '', offset: 0 } );
+            return;
+        }
         const { history } = this.state;
         const command = history[ history.length - offset ];
         const state = {}
