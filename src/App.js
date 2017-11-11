@@ -73,6 +73,9 @@ class App extends Component {
             this.setState( { command: 'ls' } );
             event.preventDefault();
         }
+        if ( event.key === 'l' && event.ctrlKey ) {
+            this.reset();
+        }
     }
 
     handleKeyPress = ( event ) => {
