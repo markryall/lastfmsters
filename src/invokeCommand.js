@@ -1,6 +1,6 @@
 const commandHandlers = {};
 
-commandHandlers[ 'countdown' ] = ( handler, args ) => {
+commandHandlers[ 'countdown' ] = ( handler, { args } ) => {
     let time = parseInt( args.shift() || 0 );
     const tick = () => {
         if ( time <= 0 ) {
@@ -22,13 +22,13 @@ commandHandlers[ 'ls' ] = ( handler ) => {
     handler.completeCommand( "README.md node_modules package.json public src".split(" ") );
 };
 
+const defaultHandler = ( handler, { command } ) => {
+    handler.completeCommand( [ `Unknown command "${command}"` ] );
+};
+
 export default ( line, handler ) => {
     const args = line.split( " " );
     const command = args.shift();
-    const commandHandler = commandHandlers[ command ];
-    if ( commandHandler ) {
-        setTimeout( () => commandHandler( handler, args ), 0 );
-        return;
-    }
-    setTimeout( () => { handler.completeCommand( [ `Unknown command "${command}"` ] ); }, 0 );
+    const commandHandler = commandHandlers[ command ] || defaultHandler;
+    setTimeout( () => commandHandler( handler, { args, command } ), 0 );
 }
