@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import invokeCommand from './invokeCommand';
+import historyStore from './history';
 
 class App extends Component {
     state = {
@@ -45,7 +46,7 @@ class App extends Component {
             this.setState( { command: '', offset: 0 } );
             return;
         }
-        const history = this.getHistory();
+        const history = historyStore.get();
         const command = history[ history.length - offset ];
         const state = {}
         if ( command ) state[ 'command' ] = command;
@@ -68,20 +69,10 @@ class App extends Component {
         }
     }
 
-    getHistory() {
-        return JSON.parse( global.localStorage.getItem( 'history' ) || "[]" );
-    }
-
-    appendToHistory( command ) {
-        const history = this.getHistory();
-        history.push( command );
-        global.localStorage.setItem( 'history', JSON.stringify( history ) );
-    }
-
     handleKeyPress = ( event ) => {
         if ( event.key === 'Enter' ){
             const { command } = this.state;
-            this.appendToHistory( command );
+            historyStore.append( command );
             this.setState( { command: '', executingCommand: true, offset: 0 } );
             this.handleCommand( command );
         }
@@ -90,22 +81,6 @@ class App extends Component {
     componentDidMount() {
         this.nameInput.focus();
         global.component = this;
-        /* axios.get(
-         *     "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&nowplaying=true&user=mryall&api_key=21f8c75ad38637220b20a03ad61219a4&format=json&limit=50&extended=1"
-         * ).then(
-         *     (result) => {
-         *         result.data.recenttracks.track.map(
-         *             (track) => {
-         *                 console.log(track.name)
-         *                 track.image.map(
-         *                     (image) => {
-         *                         console.log(`  ${image['#text']} (${image.size})`)
-         *                     }
-         *                 );
-         *             }
-         *         );
-         *     }
-         * );*/
     }
 
     render() {
@@ -115,7 +90,7 @@ class App extends Component {
                 <span id="PS1">&gt; </span>
                 <input
                     id="input"
-                    ref={ (input) => { this.nameInput = input; } } 
+                    ref={ (input) => { this.nameInput = input; } }
                     onKeyDown={ this.handleKeyDown }
                     onKeyPress={ this.handleKeyPress }
                     onChange={ this.onChange }
